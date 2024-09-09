@@ -1,16 +1,31 @@
 import express from "express";
+import mongoose from "mongoose";
+import Product from "./models/product.model.js";
+const port = process.env.PORT;
+const mongoDB = process.env.MONGODB_CONNECT;
+
 const app = express();
-const port = process.env.port;
-
-app.listen(port, () => {
-  console.log(`listen port ${port}`);
-});
-
+app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Hello, world!!!!");
 });
 
+app.post("/api/products", (req, res) => {
+  try {
+    res.send(req.body);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
-(() => {
-    console.log("Hello, World!");
-})();
+mongoose
+  .connect(mongoDB)
+  .then(() => {
+    console.log("Connected to the database");
+    app.listen(port, () => {
+      console.log(`listen port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log("Error connecting to Mongo");
+  });
